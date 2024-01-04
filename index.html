@@ -46,22 +46,20 @@
                         div.append("<br>");
                         continue;
                     }
-                    //setFileText(f);
                     let s = f.split('=');
-                    div.append(template.replace("$content$",s[0]).replace("$errorLevel$",s[1]));
+                    
+                    setFileText(s[0]);
+                    div.append(template.replaceAll("$content$",s[0]).replaceAll("$errorLevel$",s[1]).replaceAll("$jccontent$",s[0].replaceAll('.','')));
+                    
                 }
+                $(".justCopied").hide();
             };
-            function getReal(inpt){
-                fetch(gurl+inpt)
-                .then(function(response) {
-                    response.text().then(function(text) {
-                    navigator.clipboard.writeText(text);
-                    });
-                });
-            }
             $("#buttonsContainer").on("click",".copyButton",function(){
-                let contentID = $(this).html()+"\r";
-                getReal(contentID);
+                let contentID = $(this).html();
+                navigator.clipboard.writeText(content.get(contentID));
+                console.log("Just copied: "+contentID);
+                $("#justCopied"+(contentID.replaceAll('.',''))).show();
+                $("#justCopied"+(contentID.replaceAll('.',''))).fadeOut(2000);
             });
         });
         
@@ -76,6 +74,12 @@
             padding:2   px;
             width:10rem;    
             margin:1px;
+        }
+        .justCopied{
+            color:white;
+            background-color: black;
+            border: none;
+            width:7rem;
         }
         .errorLevel0{
             color:darkgreen;
@@ -100,8 +104,10 @@
 <body>
     <p>Click the button to copy code to clipboard.<br>Naming convention: X.Y.Z<br>X = Lesson#, Y = Topic#, Z = Problem#</p>
     <div id="buttonsContainer">
-        <button class="copyButton errorLevel$errorLevel$">$content$</button>
-        <br>
+        <div style="display:flex; flex-direction: row; margin:0;">
+            <button class="copyButton errorLevel$errorLevel$">$content$</button>
+            <button class="justCopied" id="justCopied$jccontent$"><b><-Just Copied !</b></button>
+        </div>
     </div>
 </body>
 </html>
