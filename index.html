@@ -42,7 +42,10 @@
                 let template = div.html();
                 div.html("");
                 for(let f of data){
-                    if(f.length<=1) continue;
+                    if(f.length<=1) {
+                        div.append("<br>");
+                        continue;
+                    }
                     //setFileText(f);
                     let s = f.split('=');
                     div.append(template.replace("$content$",s[0]).replace("$errorLevel$",s[1]));
