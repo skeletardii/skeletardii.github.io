@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chodecum</title>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        $(function(){
+            var gurl = 'https://raw.githubusercontent.com/skeletardii/chodecum/main/';
+            var storedText;
+            var inits = false;
+            function getFileText(url){
+                let st = "a";
+                fetch(url)
+                .then(function(response) {
+                    response.text().then(function(text) {
+                    storedText = text;
+                    //console.log(storedText);
+                    if(!inits){
+                        init();
+                    }
+                    return storedText;
+                    });
+                });
+                return storedText;
+            }
+            function setFileText(key){
+                fetch(gurl+key)
+                .then(function(response) {
+                    response.text().then(function(text) {
+                    //console.log(storedText);
+                    content.set(key,text);
+                    });
+                });
+            }
+            var content = new Map();
+            getFileText(gurl+'list.txt');
+            function init(){
+                var data = storedText.split("\n");
+                let div = $("#buttonsContainer");
+                let template = div.html();
+                div.html("");
+                for(let f of data){
+                    if(f.length<=1) continue;
+                    //setFileText(f);
+                    let s = f.split('=');
+                    div.append(template.replace("$content$",s[0]).replace("$errorLevel$",s[1]));
+                }
+            };
+            function getReal(inpt){
+                fetch(gurl+inpt)
+                .then(function(response) {
+                    response.text().then(function(text) {
+                    navigator.clipboard.writeText(text);
+                    });
+                });
+            }
+            $("#buttonsContainer").on("click",".copyButton",function(){
+                let contentID = $(this).html()+"\r";
+                getReal(contentID);
+            });
+        });
+        
+    </script>
+    <style>
+        body{
+            color:white;
+            background-color: black;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        }
+        button{
+            padding:2   px;
+            width:10rem;    
+            margin:1px;
+        }
+        .errorLevel0{
+            color:darkgreen;
+        }
+        .errorLevel0:hover{
+            background-color:greenyellow;
+        }
+        .errorLevel1{
+            color: blue;
+        }
+        .errorLevel1:hover{
+            background-color:aquamarine;
+        }
+        .errorLevel2{
+            color: red;
+        }
+        .errorLevel2:hover{
+            background-color:pink;
+        }
+    </style>
+</head>
+<body>
+    <p>Click the button to copy code to clipboard.<br>Naming convention: X.Y.Z<br>X = Lesson#, Y = Topic#, Z = Problem#</p>
+    <div id="buttonsContainer">
+        <button class="copyButton errorLevel$errorLevel$">$content$</button>
+        <br>
+    </div>
+</body>
+</html>
